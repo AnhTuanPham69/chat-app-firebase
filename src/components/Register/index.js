@@ -11,14 +11,14 @@ const { Title } = Typography;
 const fbProvider = new firebase.auth.FacebookAuthProvider();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
 
-export default function Login() {
+export default function Register() {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
 
-  const handleLogin = async (provider) => {
+  const handleRegister = async (provider) => {
     const { additionalUserInfo, user } = await auth.signInWithPopup(provider);
 
     if (additionalUserInfo?.isNewUser) {
@@ -102,14 +102,19 @@ export default function Login() {
                 />
                 <br />
               </div>
-
               <div className="form-group">
-                <input type="checkbox" id="save_login" />
-                &nbsp;
-                <label htmlFor="save_login"> Save login? </label>
+                <label>Confirm Password</label>
+                <input
+                  type="password"
+                  className="form-control"
+                  placeholder="Enter password"
+                  {...register("password", { required: true })}
+                />
+                <br />
               </div>
+
               <button type="submit" className="btn btn-login btn-lg btn-block">
-                Sign in
+                Sign up
               </button>
             </form>
           </div>
