@@ -1,5 +1,5 @@
 import React from 'react';
-import { Collapse, Typography, Button } from 'antd';
+import { Collapse, Button } from 'antd';
 import styled from 'styled-components';
 import { PlusSquareOutlined } from '@ant-design/icons';
 import { AppContext } from '../../Context/AppProvider';
@@ -23,15 +23,34 @@ const PanelStyled = styled(Panel)`
     }
   }
 `;
-
-const LinkStyled = styled(Typography.Link)`
-  display: block;
-  margin-bottom: 5px;
-  color: white;
+const CollapseStyled = styled(Collapse)`
+    white-space: nowrap;
+    overflow-wrap: ellipsis;
 `;
 
+const LinkStyled = styled.div`
+  padding: 10px 10px 10px 30px;
+  color: white;
+  font-size: 15px;
+  text-decoration: none;
+  display: block;
+  margin-bottom: 20px;
+  pointer-event: none;
+  cursor: default;
+`;
+const ActiveRoomStyled = styled.div`
+  max-width: 100%;
+  padding: 10px 10px 10px 30px;
+  margin-bottom: 20px;
+  background: white;
+  color: #4287f5;
+  border-radius: 25px;
+  position: relative;
+  pointer-event: none;
+  cursor: default;
+`
 export default function RoomList() {
-  const { rooms, setIsAddRoomVisible, setSelectedRoomId } =
+  const { rooms, setIsAddRoomVisible, setSelectedRoomId, selectedRoomId } =
     React.useContext(AppContext);
 
   const handleAddRoom = () => {
@@ -39,12 +58,13 @@ export default function RoomList() {
   };
 
   return (
-    <Collapse ghost defaultActiveKey={['1']}>
+    <CollapseStyled ghost defaultActiveKey={['1']}>
       <PanelStyled header='Danh sách các phòng' key='1'>
         {rooms.map((room) => (
-          <LinkStyled key={room.id} onClick={() => setSelectedRoomId(room.id)}>
-            {room.name}
-          </LinkStyled>
+            room.id === selectedRoomId 
+          ? <ActiveRoomStyled><div key={room.id} onClick={() => setSelectedRoomId(room.id)}> {room.name} </div></ActiveRoomStyled>
+          : <div><LinkStyled key={room.id} onClick={() => setSelectedRoomId(room.id)}>{room.name}</LinkStyled></div>
+         
         ))}
         <Button
           type='text'
@@ -55,6 +75,6 @@ export default function RoomList() {
           Thêm phòng
         </Button>
       </PanelStyled>
-    </Collapse>
+    </CollapseStyled>
   );
 }

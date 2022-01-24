@@ -1,12 +1,9 @@
-import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import React from "react";
-import { Row, Col, Button, Typography } from "antd";
+import { Row, Col, Button } from "antd";
 import firebase, { auth } from "../../firebase/config";
 import { addDocument, generateKeywords } from "../../firebase/services";
 import { FacebookOutlined, GoogleOutlined } from "@ant-design/icons";
-
-const { Title } = Typography;
 
 const fbProvider = new firebase.auth.FacebookAuthProvider();
 const googleProvider = new firebase.auth.GoogleAuthProvider();
@@ -14,7 +11,6 @@ const googleProvider = new firebase.auth.GoogleAuthProvider();
 export default function Login() {
   const {
     register,
-    handleSubmit,
     formState: { errors },
   } = useForm();
 

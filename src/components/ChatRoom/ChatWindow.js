@@ -1,12 +1,12 @@
-import { UserAddOutlined } from '@ant-design/icons';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import styled from 'styled-components';
-import { Button, Tooltip, Avatar, Form, Input, Alert } from 'antd';
-import Message from './Message';
-import { AppContext } from '../../Context/AppProvider';
-import { addDocument } from '../../firebase/services';
-import { AuthContext } from '../../Context/AuthProvider';
-import useFirestore from '../../hooks/useFirestore';
+import { UserAddOutlined } from "@ant-design/icons";
+import React, { useContext, useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import { Button, Tooltip, Avatar, Form, Input, Alert } from "antd";
+import Message from "./Message";
+import { AppContext } from "../../Context/AppProvider";
+import { addDocument } from "../../firebase/services";
+import { AuthContext } from "../../Context/AuthProvider";
+import useFirestore from "../../hooks/useFirestore";
 
 const HeaderStyled = styled.div`
   display: flex;
@@ -39,6 +39,12 @@ const ButtonGroupStyled = styled.div`
   align-items: center;
 `;
 
+const SpanStyled = styled.span`
+  padding: 5px;
+  margin-left: 5%;
+  color: orange;
+`;
+
 const WrapperStyled = styled.div`
   height: 100vh;
 `;
@@ -52,17 +58,24 @@ const ContentStyled = styled.div`
 `;
 
 const FormStyled = styled(Form)`
+  margin-top: 20px;
+  margin-left: 5%;
+  margin-right: 10%;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 2px 2px 2px 0;
-  border: 1px solid rgb(230, 230, 230);
-  border-radius: 2px;
-
+  border: 2px solid #e4e6eb;
+  border-radius: 15px;
   .ant-form-item {
     flex: 1;
     margin-bottom: 0;
   }
+`;
+
+const ButtonStyled = styled(Button)`
+  background-color: #4287f5;
+  border-radius: 15px;
 `;
 
 const MessageListStyled = styled.div`
@@ -76,44 +89,50 @@ export default function ChatWindow() {
   const {
     user: { uid, photoURL, displayName },
   } = useContext(AuthContext);
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
+  const [isInput, setIsInput] = useState(true);
   const [form] = Form.useForm();
   const inputRef = useRef(null);
   const messageListRef = useRef(null);
 
   const handleInputChange = (e) => {
+    setIsInput(true);
     setInputValue(e.target.value);
   };
 
   const handleOnSubmit = () => {
-    addDocument('messages', {
-      text: inputValue,
-      uid,
-      photoURL,
-      roomId: selectedRoom.id,
-      displayName,
-    });
-
-    form.resetFields(['message']);
-
+    if (inputValue) {
+      addDocument("messages", {
+        text: inputValue,
+        uid,
+        photoURL,
+        roomId: selectedRoom.id,
+        displayName,
+      });
+    } else {
+      setIsInput(false);
+    }
+    
     // focus to input again after submit
     if (inputRef?.current) {
       setTimeout(() => {
         inputRef.current.focus();
       });
     }
+    setInputValue("");
+    form.resetFields(["message"]);
   };
 
   const condition = React.useMemo(
     () => ({
-      fieldName: 'roomId',
-      operator: '==',
+      fieldName: "roomId",
+      operator: "==",
       compareValue: selectedRoom.id,
     }),
     [selectedRoom.id]
   );
 
-  const messages = useFirestore('messages', condition);
+  const messages = useFirestore("messages", condition);
 
   useEffect(() => {
     // scroll to bottom after message changed
@@ -128,26 +147,26 @@ export default function ChatWindow() {
       {selectedRoom.id ? (
         <>
           <HeaderStyled>
-            <div className='header__info'>
-              <p className='header__title'>{selectedRoom.name}</p>
-              <span className='header__description'>
+            <div className="header__info">
+              <p className="header__title">{selectedRoom.name}</p>
+              <span className="header__description">
                 {selectedRoom.description}
               </span>
             </div>
             <ButtonGroupStyled>
               <Button
                 icon={<UserAddOutlined />}
-                type='text'
+                type="text"
                 onClick={() => setIsInviteMemberVisible(true)}
               >
                 Mời
               </Button>
-              <Avatar.Group size='small' maxCount={2}>
+              <Avatar.Group size="small" maxCount={2}>
                 {members.map((member) => (
                   <Tooltip title={member.displayName} key={member.id}>
                     <Avatar src={member.photoURL}>
                       {member.photoURL
-                        ? ''
+                        ? ""
                         : member.displayName?.charAt(0)?.toUpperCase()}
                     </Avatar>
                   </Tooltip>
@@ -159,6 +178,7 @@ export default function ChatWindow() {
             <MessageListStyled ref={messageListRef}>
               {messages.map((mes) => (
                 <Message
+                  authMes={mes.uid}
                   key={mes.id}
                   text={mes.text}
                   photoURL={mes.photoURL}
@@ -168,26 +188,30 @@ export default function ChatWindow() {
               ))}
             </MessageListStyled>
             <FormStyled form={form}>
-              <Form.Item name='message'>
+              <Form.Item name="message">
                 <Input
-                  ref={inputRef}
                   onChange={handleInputChange}
                   onPressEnter={handleOnSubmit}
-                  placeholder='Nhập tin nhắn...'
+                  placeholder="Nhập tin nhắn..."
                   bordered={false}
-                  autoComplete='off'
+                  autoComplete="off"
                 />
               </Form.Item>
-              <Button type='primary' onClick={handleOnSubmit}>
+              <ButtonStyled type="primary" onClick={handleOnSubmit}>
                 Gửi
-              </Button>
+              </ButtonStyled>
             </FormStyled>
+            {!isInput && (
+              <SpanStyled className="text-warning">
+                Chưa nhập tin nhắn...
+              </SpanStyled>
+            )}
           </ContentStyled>
         </>
       ) : (
         <Alert
-          message='Hãy chọn phòng'
-          type='info'
+          message="Hãy chọn phòng"
+          type="info"
           showIcon
           style={{ margin: 5 }}
           closable
