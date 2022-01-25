@@ -16,19 +16,6 @@
   /* Center and scale the image nicely */
   background-position: center;
   background-size: cover;
-  /* background: #12c2e9; /* fallback for old browsers */
-  /* background: -webkit-linear-gradient(
-    to right,
-    #fda858,
-    #71eda5,
-    #12c2e9
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  /* background: linear-gradient(
-    to right,
-    #fda858,
-    #71eda5,
-    #12c2e9 */
-  /* ); */
 }
 
 body,
@@ -97,9 +84,7 @@ html,
 .inner-login .login-top h3 {
   color: #ffff;
 }
-/* .text-danger{
-    color: rgb(255, 72, 0);
-  } */
+
 .logo-img-login img {
   width: 300px;
   height: 100px;
